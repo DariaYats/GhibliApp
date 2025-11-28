@@ -8,14 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var filmsViewModel = FilmViewModel()
+    @State private var favoritesViewModel = FavoritesViewModel()
+
     var body: some View {
         TabView {
             Tab("Movies", systemImage: "movieclapper") {
-                FilmsScreen()
+                FilmsScreen(filmsViewModel: filmsViewModel, favoritesViewModel: favoritesViewModel)
             }
 
             Tab("Favorites", systemImage: "heart") {
-                FavoritesScreen()
+                FavoritesScreen(filmsViewModel: filmsViewModel, favoritesViewModel: favoritesViewModel)
             }
 
             Tab("Settings", systemImage: "gear") {
@@ -25,6 +28,10 @@ struct ContentView: View {
             Tab(role: .search) {
                 SearchScreen()
             }
+        }
+        .task {
+            favoritesViewModel.load()
+            await filmsViewModel.fetch()
         }
     }
 }
